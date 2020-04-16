@@ -23,12 +23,12 @@ jobs:
         - g++-4.8
     before_install:
     - |-
-      cd /home/travis/build/bcgov/OCWA/microservices/forumApi
+      cd /home/travis/build/bcgov/forum-api
       npm ci
       if [ "$TRAVIS_TAG" = "" ]; then npm audit; fi
     before_script:
     - |-
-      cd /home/travis/build/bcgov/OCWA/microservices/forumApi
+      cd /home/travis/build/bcgov/forum-api
       cp config/test.json.example config/test.json
       cp config/default.json.example config/default.json
     - |-
@@ -44,20 +44,20 @@ jobs:
       helm init --client-only
     - sudo pip install yamllint=="${YAMLLINT_VERSION}"
     - |-
-      cd /home/travis/build/bcgov/OCWA
+      cd /home/travis/build/bcgov/forum-api
       wget -q ${SONAR_URL}${SONAR_APP}-cli-${SONAR_VERSION}.zip
       unzip ${SONAR_APP}-cli-${SONAR_VERSION}.zip
       PATH=`pwd`/${SONAR_APP}-${SONAR_VERSION}/bin:$PATH
     script:
     - |-
-      cd /home/travis/build/bcgov/OCWA/microservices/forumApi
+      cd /home/travis/build/bcgov/forum-api
       npm test
     - helm lint helm/forum-api
     - |-
-      cd /home/travis/build/bcgov/OCWA/microservices/forumApi
+      cd /home/travis/build/bcgov/forum-api
       bash docker_quayio_push ocwa_forum_api
     - |-
-      cd /home/travis/build/bcgov/OCWA
+      cd /home/travis/build/bcgov/forum-api
       PATH=`pwd`/${SONAR_APP}-${SONAR_VERSION}/bin:$PATH
       sonar-scanner -Dsonar.login=$SONAR_TOKEN -Dproject.settings=sonar-project.properties -Dsonar.projectKey=ocwa_forum_api -Dsonar.projectName="OCWA Forum API" -Dsonar.modules=forumApi
     before_deploy:
