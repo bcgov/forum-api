@@ -63,3 +63,8 @@ typings/
 
 # next.js build output
 .next
+
+# Intellij
+.idea/
+*.iml
+*.iws
