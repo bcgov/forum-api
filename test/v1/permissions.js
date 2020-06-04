@@ -23,6 +23,7 @@ describe("Permisisons", function() {
         it('it should get all records (currently 0)', function (done) {
             chai.request(server)
                 .get('/v1/permission')
+                .set("Authorization", "Bearer "+jwt)
                 .end(function (err, res) {
                     res.should.have.status(200);
                     res.body.length.should.be.eql(0);
@@ -36,6 +37,7 @@ describe("Permisisons", function() {
         it('it should get unauthorized', function (done) {
             chai.request(server)
                 .post('/v1/')
+                .set("Authorization", "Bearer "+jwt)
                 .send({
                     'priority': 9000,
                     'allow': true,
