@@ -19,7 +19,7 @@ router.use('/api-docs', function(req, res){
 
 
 //permissions
-router.use('/permission', permissionRouter);
+router.use('/permission', auth.authenticate('jwt', {session: false}), permissionRouter);
 
 //topics
 router.use('/', auth.authenticate('jwt', {session: false}), topicRouter);
