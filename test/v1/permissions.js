@@ -37,7 +37,6 @@ describe("Permisisons", function() {
         it('it should get unauthorized', function (done) {
             chai.request(server)
                 .post('/v1/')
-                .set("Authorization", "Bearer "+jwt)
                 .send({
                     'priority': 9000,
                     'allow': true,
