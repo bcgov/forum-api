@@ -45,7 +45,6 @@ describe("Permisisons", function() {
                     "group_ids": "*"
                 })
                 .end(function (err, res) {
-                    console.log(res);
                     res.should.have.status(401);
                     done();
                 });

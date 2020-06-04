@@ -98,38 +98,46 @@ router.put("/:id", function(req, res, next){
 //Update permission NOTE THIS DOES NOT VALIDATE given topic or comment ids.
 //NOTE that the allow flag does matter, but it is implied to be allow true for topics and allow false for comments
 router.post("/", function(req, res, next){
+    console.log("hi1");
     var db = require('../db/db');
-
+    console.log("hi2");
     var permission = new db.Permission;
 
     var log = require('npmlog');
 
     var config = require('config');
+    console.log("hi3");
     var adminGroup = config.get('adminGroup')
+    console.log("hi4");
 
     if (req.user.groups.indexOf(adminGroup) === -1){
         res.status(403);
         return res.json({error: "Forbidden"});
     }
+    console.log("hi5");
 
     permission.priority = req.body.priority;
     if (typeof(req.body.allow) !== "undefined") {
         permission.allow = req.body.allow;
     }
+    console.log("hi7");
 
     permission.topic_id = (typeof(req.body.topic_id) !== "undefined") ? req.body.topic_id : null ;
     permission.comment_id = (typeof(req.body.comment_id) !== "undefined") ? req.body.comment_id : null ;
     permission.user_ids = (typeof(req.body.user_ids) !== "undefined") ? req.body.user_ids : null ;
     permission.group_ids = (typeof(req.body.group_ids) !== "undefined") ? req.body.group_ids : null ;
+    console.log("hi8");
 
     log.debug("Creating permission: ", permission);
 
     permission.save(function(saveErr, saveRes){
         if (saveErr){
+            console.log("hi9", saveErr);
             res.status(500);
             res.json({error: saveErr.message});
             return;
         }
+        console.log("hi10");
         res.json({message: "Successfully written", item: saveRes});
     });
 });
