@@ -5,7 +5,7 @@ const commentSchema = new Schema({
     topic_id: {type: Schema.Types.ObjectId, ref: 'topic', required: true},
     comment: {type: String, required: true},
     author_user: {type: String, required: true},
-    created_ts: {type: Date, default: Date.now(), required: true}
+    created_ts: {type: Date, default: Date.now, required: true}
 });
 
 var model = mongoose.model('comment', commentSchema);
