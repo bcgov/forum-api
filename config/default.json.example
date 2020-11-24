@@ -8,11 +8,11 @@
   "database": {
     "host": "localhost",
     "username": "commentApi",
-    "password": "dev",
+    "password": "commentApi",
     "dbName": "commentApi"
   },
 
-  "jwtSecret": "superSecretHere",
+  "jwtSecret": "jwtSecret",
 
   "defaultAccessIsGroup": true,
   "requiredRoleToCreateTopic": "exporter",
