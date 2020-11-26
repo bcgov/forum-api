@@ -13,7 +13,7 @@ All installs require an instance of mongodb available.
 ### Bare Metal Install
 #### MongoDB
 Create a new Mongo collection on the command line. The following value `commentApi` is provided for (local development only) all of user, password and database name.
-Whatever values are chosen need to be the *same* in both the creation of the Mongo Collection (see below) and in the database entry for `config/default.json` (see [Create and Modify Config](#config))
+Whatever values are chosen need to be the *same* in both the creation of the Mongo Collection (see below) and in the database entry for `config/default.json` (see [Create and Modify Config](#create-and-modify-config))
 ```
 mongo
 db.createCollection("commentApi")
@@ -25,7 +25,7 @@ exit
 Test the connection to the MongoDB Collection you just made (successful test brings you to a command prompt): 
 `mongo mongodb://commentApi:commentApi@localhost:27017/commentApi?authSource=commentApi`
 
-#### <a name="config"></a> Create and Modify Config 
+#### Create and Modify Config 
 Create a default.json file from default.json.example under the config directory and edit the values to ones for your environment.
 `cp config/default.json.example config/default.json`
 run `npm install` to install dependencies and then `npm run serve` to start up the server.
