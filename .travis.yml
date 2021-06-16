@@ -3,11 +3,6 @@ dist: trusty
 language: node_js
 services:
 - docker
-addons:
-  sonarcloud:
-    organization: ajc_bcgov
-    token:
-      secure: yoqO9/QRJlT4mcpgQ4RMSg6h97PRnql70EVCcPaBr6nGNaxSmea8K1AxdqFZcC5PMrj+i4oRFrIQIEmOPeJAzh+5wvygXhwsavXR2S0LcTcScXZQQ8ZWXw9exYl5ELt3Ee6BUF4TIGnR3iztp6VGm9mv992Pi7NqYwdIN9z1rVodb/rH3vlBRzxIH6p+eo4cs/rpUatFNDjRnCVvHxDWy2reC43r3Vf61jGR3FFALcah/PrIUDVemY9wqbdqA78HGB97o5UU6Jgwk2qmvUXTxJcyN+7dSi0bhr8SHEGN1TTr7TmOOxFIKy+fPs9krCF8Ll4CruAXu1YLaTRD6Ilxb4U5yUJgjANnsYbR7klD/DC4pwRx1L90cCVbgsNRzrsq+Qvn57bdSoyHGFCSWqQdkW6EG9xcqogMP6y9/DBcgb4SYIMNLjaoqSgunSmDFTFgidHBTcLN6e4mvM89FRDY64i+DINp9gginqHak/LxhNct6LTREx8bcoOA4J28eHY02Cwrtu2pful7uOonZD49XrGW+OfOAQY2c1b91hNJUK+tWPh0B/0CgWyKNize3WclV3pBedFDYzbzeni3TkqoN7Na22xQTl95mrV9vZ7VQpIft0Jlf+OFS+I8s3G2W/Wp/Rhk9tXfxcEa6yvDwxFMv3QsQrs7No3yTRNFw6U3QWs=
 jobs:
   include:
   - name: Forum Api
@@ -38,9 +33,6 @@ jobs:
       ${PWD}/mongodb-linux-x86_64-${MONGODB}/bin/mongo forumDb --eval 'db.createUser({user:"forumUser", pwd:"forumPass", roles:["dbAdmin", "readWrite"]});'
     - |-
       cd /home/travis/build/bcgov/forum-api
-      wget -q ${SONAR_URL}${SONAR_APP}-cli-${SONAR_VERSION}.zip
-      unzip ${SONAR_APP}-cli-${SONAR_VERSION}.zip
-      PATH=`pwd`/${SONAR_APP}-${SONAR_VERSION}/bin:$PATH
     script:
     - |-
       cd /home/travis/build/bcgov/forum-api
@@ -48,10 +40,6 @@ jobs:
     - |-
       cd /home/travis/build/bcgov/forum-api
       bash docker_quayio_push ocwa_forum_api
-    - |-
-      cd /home/travis/build/bcgov/forum-api
-      PATH=`pwd`/${SONAR_APP}-${SONAR_VERSION}/bin:$PATH
-      sonar-scanner -Dsonar.login=$SONAR_TOKEN -Dproject.settings=sonar-project.properties -Dsonar.projectKey=ocwa_forum_api -Dsonar.projectName="OCWA Forum API" -Dsonar.modules=forumApi
     before_deploy:
     - cd /home/travis/build/bcgov/forum-api
     deploy:
@@ -64,9 +52,6 @@ env:
   global:
   - CXX=g++-4.8
   - MONGODB=4.1.1
-  - SONAR_APP=sonar-scanner
-  - SONAR_URL=https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/
-  - SONAR_VERSION=3.2.0.1227-linux
   - TERRAFORM_VERSION=0.12.6
   - TUSD_VERSION=0.11.0
   - YAMLLINT_VERSION=1.8.1
