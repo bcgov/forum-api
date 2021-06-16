@@ -25,7 +25,6 @@ jobs:
     - |-
       cd /home/travis/build/bcgov/forum-api
       npm ci
-      if [ "$TRAVIS_TAG" = "" ]; then npm audit --production; fi
     before_script:
     - |-
       cd /home/travis/build/bcgov/forum-api
