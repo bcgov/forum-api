@@ -53,7 +53,10 @@ router.get('/', function(req, res, next) {
             res.json(err);
             return;
         }
+        res.status(200);
+        console.log ("Done get all");
         res.json(results);
+        return;
     });
 
 

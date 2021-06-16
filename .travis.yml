@@ -37,11 +37,6 @@ jobs:
       mkdir ${PWD}/mongodb-linux-x86_64-${MONGODB}/data
       ${PWD}/mongodb-linux-x86_64-${MONGODB}/bin/mongod --dbpath ${PWD}/mongodb-linux-x86_64-${MONGODB}/data --logpath ${PWD}/mongodb-linux-x86_64-${MONGODB}/mongodb.log --fork
       ${PWD}/mongodb-linux-x86_64-${MONGODB}/bin/mongo forumDb --eval 'db.createUser({user:"forumUser", pwd:"forumPass", roles:["dbAdmin", "readWrite"]});'
-    - |-
-      wget -q ${HELM_URL}/${HELM_TGZ}
-      tar xzfv ${HELM_TGZ}
-      PATH=`pwd`/linux-amd64/:$PATH
-      helm init --client-only
     - sudo pip install yamllint=="${YAMLLINT_VERSION}"
     - |-
       cd /home/travis/build/bcgov/forum-api
@@ -52,7 +47,6 @@ jobs:
     - |-
       cd /home/travis/build/bcgov/forum-api
       npm test
-    - helm lint helm/forum-api
     - |-
       cd /home/travis/build/bcgov/forum-api
       bash docker_quayio_push ocwa_forum_api
@@ -71,8 +65,6 @@ jobs:
 env:
   global:
   - CXX=g++-4.8
-  - HELM_TGZ=helm-v2.4.1-linux-amd64.tar.gz
-  - HELM_URL=https://storage.googleapis.com/kubernetes-helm
   - MONGODB=4.1.1
   - SONAR_APP=sonar-scanner
   - SONAR_URL=https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/
