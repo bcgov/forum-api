@@ -85,7 +85,24 @@ router.post("/", function(req, res, next){
 
     if (config.has('requiredRoleToCreateTopic')){
         var reqRole = config.get('requiredRoleToCreateTopic');
-        var reqIndex = req.user.groups.indexOf(reqRole);
+
+        if (reqRole.indexOf(', ') !== -1){
+            reqRole = reqRole.split(", ");
+        }
+        if (reqRole.indexOf(",") !== -1){
+            reqRole = reqRole.split(", ");
+        }
+
+        var reqIndex = -1;
+
+        if (Array.isArray(reqRole)){
+            reqIndex = req.user.groups.some( (el) => {
+                return reqRole.indexOf(el) !== -1;
+            });
+        }else{
+            reqIndex = req.user.groups.indexOf(reqRole);
+        }
+
         if (reqIndex===-1){
             log.error('User ' + req.user.id + " tried to create a topic but lacks required role: " + reqRole);
             res.status(401);
@@ -99,10 +116,17 @@ router.post("/", function(req, res, next){
 
     var ignoreGroups = config.has('ignoreGroupsFromConsideration') ? config.get('ignoreGroupsFromConsideration') : [];
     for (var i=0; i<ignoreGroups.length; i++){
-        var ignoreIndex = groups.indexOf(ignoreGroups[i]);
-        if (ignoreIndex !== -1){
-            groups.splice(ignoreIndex, 1);
+        
+        if ( (ignoreGroups[i].indexOf("/") == 0) && (ignoreGroups[i].lastIndexOf("/") === (ignoreGroups[i].length -1)) ){
+            groups = groups.filter( (el) => {return el.match(ignoreGroups[i]) === null })
+        }else{
+            var ignoreIndex = -1;
+            ignoreIndex = groups.indexOf(ignoreGroups[i]);
+            if (ignoreIndex !== -1){
+                groups.splice(ignoreIndex, 1);
+            }
         }
+        
     }
 
     topic.author_groups = groups;

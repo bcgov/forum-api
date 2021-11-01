@@ -28,10 +28,23 @@ model.getAll = function(query, limit, page, user, callback){
     var checkGroups = user.groups.slice();
     if ((defaultPermIsGroup) && (config.has('requiredRoleToCreateTopic'))){
         var removeGroup = config.get('requiredRoleToCreateTopic');
+        if (removeGroup.indexOf(', ') !== -1){
+            removeGroup = removeGroup.split(", ");
+        }
+        if (removeGroup.indexOf(",") !== -1){
+            removeGroup = removeGroup.split(", ");
+        }
 
-        var index = checkGroups.indexOf(removeGroup);
-        if (index !== -1){
-            checkGroups.splice(index,1);
+        if (Array.isArray(removeGroup)){
+            checkGroups = checkGroups.filter( function( el ) {
+                return removeGroup.indexOf( el ) < 0;
+            });
+        }else{
+
+            var index = checkGroups.indexOf(removeGroup);
+            if (index !== -1){
+                checkGroups.splice(index,1);
+            }
         }
 
         index = checkGroups.indexOf('/oc');
@@ -50,7 +63,7 @@ model.getAll = function(query, limit, page, user, callback){
 
     //user is in admin group so they can see everything
     if ( (adminGroup) && (user.groups.indexOf(adminGroup) !== -1) ){
-        defaultPermOverride = {"permissions.0": {$exists: false}};
+        defaultPermOverride = {};
     }
 
     var agg = [

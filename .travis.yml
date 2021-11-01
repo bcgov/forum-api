@@ -1,66 +1,66 @@
-os: linux
-dist: trusty
-language: node_js
-services:
-- docker
-jobs:
-  include:
-  - name: Forum Api
-    stage: APIs
-    language: node_js
-    node_js: lts/*
-    cache: npm
-    addons:
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        packages:
-        - g++-4.8
-    before_install:
-    - |-
-      cd /home/travis/build/bcgov/forum-api
-      npm ci
-    before_script:
-    - |-
-      cd /home/travis/build/bcgov/forum-api
-      cp config/test.json.example config/test.json
-      cp config/default.json.example config/default.json
-    - |-
-      wget -q http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-${MONGODB}.tgz
-      tar xzf mongodb-linux-x86_64-${MONGODB}.tgz
-      mkdir ${PWD}/mongodb-linux-x86_64-${MONGODB}/data
-      ${PWD}/mongodb-linux-x86_64-${MONGODB}/bin/mongod --dbpath ${PWD}/mongodb-linux-x86_64-${MONGODB}/data --logpath ${PWD}/mongodb-linux-x86_64-${MONGODB}/mongodb.log --fork
-      ${PWD}/mongodb-linux-x86_64-${MONGODB}/bin/mongo forumDb --eval 'db.createUser({user:"forumUser", pwd:"forumPass", roles:["dbAdmin", "readWrite"]});'
-    - |-
-      cd /home/travis/build/bcgov/forum-api
-    script:
-    - |-
-      cd /home/travis/build/bcgov/forum-api
-      npm test
-    - |-
-      cd /home/travis/build/bcgov/forum-api
-      bash docker_quayio_push ocwa_forum_api
-    before_deploy:
-    - cd /home/travis/build/bcgov/forum-api
-    deploy:
-      provider: script
-      script: bash docker_push ocwa_forum_api || travis_terminate 1
-      on:
-        all_branches: true
-        condition: "$TRAVIS_BRANCH =~ ^master|develop$ || -n $TRAVIS_TAG"
-env:
-  global:
-  - CXX=g++-4.8
-  - MONGODB=4.1.1
-  - TERRAFORM_VERSION=0.12.6
-  - TUSD_VERSION=0.11.0
-  - YAMLLINT_VERSION=1.8.1
-  #quay username and password
-  - secure: A9PURAyM2lUxzASQMpTy7KpVzrbV6S6y+5n9Lqs6gdwv/VcVisTSZXvzWMsuRjByqnzJ4qH5SAcN+ef0vd7FB7ixIo99k31u+XHn/eMFb/UhoHEYMBqv0LbU1MnpqJNpNP+mPcHxvgrwh61XoPyxAdWdBUbQopvW96xJJpwSew/fG7IftPf7PWGQg2LJdXu4KIPq0cOrLJ/p6pGcaIPyOSJt+siWYqS8eMAttAN4iXmIIGGKQYeRO2f9bGyS4wiz3oDPNRHZmnLMgLJZez5x0nmzo0NjoyMaAQiI2pzIABq7aM/3VZxDSUDVJuwdTRTSErxeq6JwnO2d5g8aWr6UvtpxPWsuRuJGNzmFF/CczvNFsGrAA1BNFygSpI9g5fYW7VszwU7VNBx6TbMXonBYhsi4vsGGFT/zaLcAALRw7rhXZGk1JqZ4wKW+YxsgMm2Xq7HNLKSJtsmoBhfVmyRPetIpbpooGR/Hgm3rWec0b9HotSRYx4WUBYNJ1YtBaCNyf/SyT5KKN6vZABEtlQbnJrslFKA0v1K7c73+oa7yJZw9VVHjp/oramn2Xj7xHkvKY2duQfZLeRImANjPKHu7lVgKKnDvvfmeUSz2M0HGjtXCarw/6lsYORJwqyHMqD7DPh+RMGDKYuCNMWwmxiu5kjtvuPAXhK2N4di8p1dNxBE=
-  - secure: iOOkhc9moKin92HYfPKRrWJgyiOWK6IOI9+ouC1ZWmGS4biPIf8kg5UZOlo0E3lHCr5vKmFkEjq7bGVrWUE9mT6Pvg2ESeySsjoIRn8oL0Udj7gCp7BzM73AIjJI9WT6fpy4S9VcrJzhi9CjolC6+UHwaxSOlfPeTID/9+dPXOdVnwnaYg6NM0NbBrBV9SDCGTCzpC13PuV1agAJ1zXn2NjC2zOiK2JmvOpjY1Ovl90FtEND2i8etgzTk60BtdKliYVEBTRwfX5YDoGcIUtKSMR2mpT4yGpDV7hR5DEeEb4ywUhyEfmFZu95Vk2OkyD7ZJ5runFucTfHYPWgCQaR6rQu0/cuQnvCA4yjrKj3y/V3PbaQvAiwZd9TwlKxXTjuH9/hIA/F7VAd04pQQdXybQ2LgNCNInLbJa8ETs7hptUFUXMoJPnByQk7VFF+EOCVSN+bYNmow64eBXdoLCHAsDoJXEk+VXVxIGrbtMECJ8hJpn+T6+wg8W1kMKuRHBHC3Hd5ij6XjSB5WSRxHBvhuYaXdT6xPOO+kiM4W54Gg9JynIkkMML1AMOYvZopZykH60+w6VJyILNOfblIi/xEIHxoR4W3PZbaerexr4O2x6t6d3kNGVjq9sJBS+HbByc3y3itObPcy0xMUu9N5mQAP9Dw4dLVF8SDft5kRUCXZQo=
-  #sonar
-  - secure: Ptq7RZkX3I6G6qkmgfzHGUUb8CtV5lgAhQACQcPpffzuHZozzfoFJXgjLRXlk25CcaZvSRbzkiJ1bnkVs0sijyzOxsUdLRLc/Vn5p7ygi+1OfC7MGivdgsL+L8VtLHHm/n40WFRZV0yUHOM/J8v93lpWtj5A0khEEs46EV/PorWz/LTsgcSst5p/TEDIJ/5Ni4uUDr8f/rp9ZheQU5ojuaiAc/m3PC7h/gfV2e7g6JDuZU2Ve1DDAMyVGZLAnfdVU2KOxzcXflh83s3iux4KuIzNi5R1uRULxpSI2zTLOfM4GgVkth8A1G8iUVU8ttcKKXAvgc5QddFl1y0WCbGyYqf85g8I5rqBIs2FnSQVljg9cdo9UEqn8Hti18H8BnMFCtftw13z4AglSUBoXihSIYRAEC+xy7Y2G/JyfOYhgAbiyF1b3Cx0N+pYaQEZDf4vE9lGLTgkfgF8fh//mJxzAs5Bk9vH0lPQ/V1j+Vc+NRlv4VAdAuPbPpfI0g90l0KVfnjA/+cTPuvXBmcR+DQaMyL14DAyG66NkE90TIxBfLUZfm0bEO5UiE4XQASHcg3hW9LkrNsosPK3dZSszAPw2ga3tacfHbcnwlMLRlzDZWHHHTFp3sM7+jpwj9C/i209xfoOoYzCkkINXo0vlqPoK2e/XdEe2Ddxw2MYKBeGRIU=
-  #docker_username
-  - secure: yl6fFKrMREe9dKprm70sTvRAFcBod5JuSrsFndjJRsn4WlbU288RhMkPPRZDjfhW2Lp8ElAw0VseF/qqgYp/cbPzLYqtgRTAaWZHc9aGVEpGCd/kn/hrRpgp2QNvdXiEUQ9rc9XhqrVBjTNPIYYulhGF800OUY4kQXbd9SdjcvMX7UGNFFtOQJTXpQrJ+bHZH4TgC3t4OVbBYahy13e05Yu9n4E/hASQePnM72LY04vAKd70A1ZrY/UccIwPepwX1f1pX8pbHDoxIrBP5RHeIqrh3gxMEPNonFmvPKdyyhayScuUk3nqPghRZQzf0DT9o6VePRhNCcKTaAm1M15+phzdQdkLydTBT+L1VtfU/SPQJ7zQyBMoqWji54BzYUXIBCxE1D3h/MhFvY6YNNgfSVUxnTKjRd4m036OfjClBNSSZ085LgdetPXLDiYu3kyMeqEkuxsicloZhHK0gqmBCNPD9Mzu51YZgYlzJtiRCRq8MmlmGx9rIm92h/iW2HLNdK+iiQVZmK2m+RWB8yfzyKP2n6HNZCb/LnYb4uKA2Vba08QqugnQg63Wq1rhi/AOzFRLvl9+plCQ/ieRreSc5NN0h41zJ+oZNLrH7781cJqaRSyjcQtYICf1n5JW264zR1a12zBJXJ6R6u1vCS/itpwrhQWfOWuNROozNEDxtW0=
-  #docker password
-  secure: "vtd1WivrFvO3jZvcQZxtFTX6OyVJtHHj1/tRrVe/FdBFsRt7Zt556/suNEE3elt2kJJ0ff2p7CIBDeeJr9y0dYiOHwMXufMyudbJSdhGHYI8J+3n6hqu41BKmH9Zi6rkBpO6Sf1ZAeRenDXniZjZIn2C8TdaGZP/wOcw5R7eFpZdCUCmz9FnBKnoj5IN5N1X8AtNtnH7dNqdZLRGXwhxGmxpfh3DDev1DIObPe2zU+9U+9TZZ8pIis3tzXJ+2fCMw+xpp4j2K5Y8bO65kCRe6ql2BeTHuKGAfZZ3VtniuGRKKgsRTi+0LhW/Xhgg1PlsHeVTKiV/d/yqsATNCPpxr0XMl7/FSWNI+lpiQINn8QYYINlKB65dUnNDHN9ogeHWplz4OE+BGYIVPss7h8cLaqpPmX8U9HX7fjNP9zIqCZMbNtKpPCNgUpY56X8cjQhmSvUF8xvq310aRGRd7BQPtPJV/SJdBieQ7dmKIaVV2zhhlNIqOy2GbbmqWc6oEojP4sr++1nko7GjbkQMOjsq5prGQXaGCAXpBaq3TGsyeAXW7D6ug4cELScS9NHtEbnX9L19BteTrl7LeZsw/31AvZvkXXlkCNXiCD8WvFw7o/WTzh6MQTvKMfJOsPFH55tPaXFjWC+7O4A++yynUswQhGksm7383qWocJxHrgS6hPw="
+# os: linux
+# dist: trusty
+# language: node_js
+# services:
+# - docker
+# jobs:
+#   include:
+#   - name: Forum Api
+#     stage: APIs
+#     language: node_js
+#     node_js: lts/*
+#     cache: npm
+#     addons:
+#       apt:
+#         sources:
+#         - ubuntu-toolchain-r-test
+#         packages:
+#         - g++-4.8
+#     before_install:
+#     - |-
+#       cd /home/travis/build/bcgov/forum-api
+#       npm ci
+#     before_script:
+#     - |-
+#       cd /home/travis/build/bcgov/forum-api
+#       cp config/test.json.example config/test.json
+#       cp config/default.json.example config/default.json
+#     - |-
+#       wget -q http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-${MONGODB}.tgz
+#       tar xzf mongodb-linux-x86_64-${MONGODB}.tgz
+#       mkdir ${PWD}/mongodb-linux-x86_64-${MONGODB}/data
+#       ${PWD}/mongodb-linux-x86_64-${MONGODB}/bin/mongod --dbpath ${PWD}/mongodb-linux-x86_64-${MONGODB}/data --logpath ${PWD}/mongodb-linux-x86_64-${MONGODB}/mongodb.log --fork
+#       ${PWD}/mongodb-linux-x86_64-${MONGODB}/bin/mongo forumDb --eval 'db.createUser({user:"forumUser", pwd:"forumPass", roles:["dbAdmin", "readWrite"]});'
+#     - |-
+#       cd /home/travis/build/bcgov/forum-api
+#     script:
+#     - |-
+#       cd /home/travis/build/bcgov/forum-api
+#       npm test
+#     - |-
+#       cd /home/travis/build/bcgov/forum-api
+#       bash docker_quayio_push ocwa_forum_api
+#     before_deploy:
+#     - cd /home/travis/build/bcgov/forum-api
+#     deploy:
+#       provider: script
+#       script: bash docker_push ocwa_forum_api || travis_terminate 1
+#       on:
+#         all_branches: true
+#         condition: "$TRAVIS_BRANCH =~ ^master|develop$ || -n $TRAVIS_TAG"
+# env:
+#   global:
+#   - CXX=g++-4.8
+#   - MONGODB=4.1.1
+#   - TERRAFORM_VERSION=0.12.6
+#   - TUSD_VERSION=0.11.0
+#   - YAMLLINT_VERSION=1.8.1
+#   #quay username and password
+#   - secure: A9PURAyM2lUxzASQMpTy7KpVzrbV6S6y+5n9Lqs6gdwv/VcVisTSZXvzWMsuRjByqnzJ4qH5SAcN+ef0vd7FB7ixIo99k31u+XHn/eMFb/UhoHEYMBqv0LbU1MnpqJNpNP+mPcHxvgrwh61XoPyxAdWdBUbQopvW96xJJpwSew/fG7IftPf7PWGQg2LJdXu4KIPq0cOrLJ/p6pGcaIPyOSJt+siWYqS8eMAttAN4iXmIIGGKQYeRO2f9bGyS4wiz3oDPNRHZmnLMgLJZez5x0nmzo0NjoyMaAQiI2pzIABq7aM/3VZxDSUDVJuwdTRTSErxeq6JwnO2d5g8aWr6UvtpxPWsuRuJGNzmFF/CczvNFsGrAA1BNFygSpI9g5fYW7VszwU7VNBx6TbMXonBYhsi4vsGGFT/zaLcAALRw7rhXZGk1JqZ4wKW+YxsgMm2Xq7HNLKSJtsmoBhfVmyRPetIpbpooGR/Hgm3rWec0b9HotSRYx4WUBYNJ1YtBaCNyf/SyT5KKN6vZABEtlQbnJrslFKA0v1K7c73+oa7yJZw9VVHjp/oramn2Xj7xHkvKY2duQfZLeRImANjPKHu7lVgKKnDvvfmeUSz2M0HGjtXCarw/6lsYORJwqyHMqD7DPh+RMGDKYuCNMWwmxiu5kjtvuPAXhK2N4di8p1dNxBE=
+#   - secure: iOOkhc9moKin92HYfPKRrWJgyiOWK6IOI9+ouC1ZWmGS4biPIf8kg5UZOlo0E3lHCr5vKmFkEjq7bGVrWUE9mT6Pvg2ESeySsjoIRn8oL0Udj7gCp7BzM73AIjJI9WT6fpy4S9VcrJzhi9CjolC6+UHwaxSOlfPeTID/9+dPXOdVnwnaYg6NM0NbBrBV9SDCGTCzpC13PuV1agAJ1zXn2NjC2zOiK2JmvOpjY1Ovl90FtEND2i8etgzTk60BtdKliYVEBTRwfX5YDoGcIUtKSMR2mpT4yGpDV7hR5DEeEb4ywUhyEfmFZu95Vk2OkyD7ZJ5runFucTfHYPWgCQaR6rQu0/cuQnvCA4yjrKj3y/V3PbaQvAiwZd9TwlKxXTjuH9/hIA/F7VAd04pQQdXybQ2LgNCNInLbJa8ETs7hptUFUXMoJPnByQk7VFF+EOCVSN+bYNmow64eBXdoLCHAsDoJXEk+VXVxIGrbtMECJ8hJpn+T6+wg8W1kMKuRHBHC3Hd5ij6XjSB5WSRxHBvhuYaXdT6xPOO+kiM4W54Gg9JynIkkMML1AMOYvZopZykH60+w6VJyILNOfblIi/xEIHxoR4W3PZbaerexr4O2x6t6d3kNGVjq9sJBS+HbByc3y3itObPcy0xMUu9N5mQAP9Dw4dLVF8SDft5kRUCXZQo=
+#   #sonar
+#   - secure: Ptq7RZkX3I6G6qkmgfzHGUUb8CtV5lgAhQACQcPpffzuHZozzfoFJXgjLRXlk25CcaZvSRbzkiJ1bnkVs0sijyzOxsUdLRLc/Vn5p7ygi+1OfC7MGivdgsL+L8VtLHHm/n40WFRZV0yUHOM/J8v93lpWtj5A0khEEs46EV/PorWz/LTsgcSst5p/TEDIJ/5Ni4uUDr8f/rp9ZheQU5ojuaiAc/m3PC7h/gfV2e7g6JDuZU2Ve1DDAMyVGZLAnfdVU2KOxzcXflh83s3iux4KuIzNi5R1uRULxpSI2zTLOfM4GgVkth8A1G8iUVU8ttcKKXAvgc5QddFl1y0WCbGyYqf85g8I5rqBIs2FnSQVljg9cdo9UEqn8Hti18H8BnMFCtftw13z4AglSUBoXihSIYRAEC+xy7Y2G/JyfOYhgAbiyF1b3Cx0N+pYaQEZDf4vE9lGLTgkfgF8fh//mJxzAs5Bk9vH0lPQ/V1j+Vc+NRlv4VAdAuPbPpfI0g90l0KVfnjA/+cTPuvXBmcR+DQaMyL14DAyG66NkE90TIxBfLUZfm0bEO5UiE4XQASHcg3hW9LkrNsosPK3dZSszAPw2ga3tacfHbcnwlMLRlzDZWHHHTFp3sM7+jpwj9C/i209xfoOoYzCkkINXo0vlqPoK2e/XdEe2Ddxw2MYKBeGRIU=
+#   #docker_username
+#   - secure: yl6fFKrMREe9dKprm70sTvRAFcBod5JuSrsFndjJRsn4WlbU288RhMkPPRZDjfhW2Lp8ElAw0VseF/qqgYp/cbPzLYqtgRTAaWZHc9aGVEpGCd/kn/hrRpgp2QNvdXiEUQ9rc9XhqrVBjTNPIYYulhGF800OUY4kQXbd9SdjcvMX7UGNFFtOQJTXpQrJ+bHZH4TgC3t4OVbBYahy13e05Yu9n4E/hASQePnM72LY04vAKd70A1ZrY/UccIwPepwX1f1pX8pbHDoxIrBP5RHeIqrh3gxMEPNonFmvPKdyyhayScuUk3nqPghRZQzf0DT9o6VePRhNCcKTaAm1M15+phzdQdkLydTBT+L1VtfU/SPQJ7zQyBMoqWji54BzYUXIBCxE1D3h/MhFvY6YNNgfSVUxnTKjRd4m036OfjClBNSSZ085LgdetPXLDiYu3kyMeqEkuxsicloZhHK0gqmBCNPD9Mzu51YZgYlzJtiRCRq8MmlmGx9rIm92h/iW2HLNdK+iiQVZmK2m+RWB8yfzyKP2n6HNZCb/LnYb4uKA2Vba08QqugnQg63Wq1rhi/AOzFRLvl9+plCQ/ieRreSc5NN0h41zJ+oZNLrH7781cJqaRSyjcQtYICf1n5JW264zR1a12zBJXJ6R6u1vCS/itpwrhQWfOWuNROozNEDxtW0=
+#   #docker password
+#   secure: "vtd1WivrFvO3jZvcQZxtFTX6OyVJtHHj1/tRrVe/FdBFsRt7Zt556/suNEE3elt2kJJ0ff2p7CIBDeeJr9y0dYiOHwMXufMyudbJSdhGHYI8J+3n6hqu41BKmH9Zi6rkBpO6Sf1ZAeRenDXniZjZIn2C8TdaGZP/wOcw5R7eFpZdCUCmz9FnBKnoj5IN5N1X8AtNtnH7dNqdZLRGXwhxGmxpfh3DDev1DIObPe2zU+9U+9TZZ8pIis3tzXJ+2fCMw+xpp4j2K5Y8bO65kCRe6ql2BeTHuKGAfZZ3VtniuGRKKgsRTi+0LhW/Xhgg1PlsHeVTKiV/d/yqsATNCPpxr0XMl7/FSWNI+lpiQINn8QYYINlKB65dUnNDHN9ogeHWplz4OE+BGYIVPss7h8cLaqpPmX8U9HX7fjNP9zIqCZMbNtKpPCNgUpY56X8cjQhmSvUF8xvq310aRGRd7BQPtPJV/SJdBieQ7dmKIaVV2zhhlNIqOy2GbbmqWc6oEojP4sr++1nko7GjbkQMOjsq5prGQXaGCAXpBaq3TGsyeAXW7D6ug4cELScS9NHtEbnX9L19BteTrl7LeZsw/31AvZvkXXlkCNXiCD8WvFw7o/WTzh6MQTvKMfJOsPFH55tPaXFjWC+7O4A++yynUswQhGksm7383qWocJxHrgS6hPw="
