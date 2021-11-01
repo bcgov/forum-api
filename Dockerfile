@@ -72,6 +72,8 @@ RUN touch /var/lib/nginx/logs/error.log && \
 # Bundle app source
 COPY . .
 RUN chmod +x entrypoint.sh
+RUN echo "" > /usr/src/app/config/default.json
+RUN chmod -R 777 /usr/src/app/config
 
 EXPOSE 2999
 EXPOSE 3000
