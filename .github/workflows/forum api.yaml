@@ -9,6 +9,8 @@ jobs:
   
   unit_test:
     runs-on: ubuntu-latest
+    env:
+      MONGODB: '4.1.1'
     defaults:
       run:
         shell: bash
@@ -20,6 +22,11 @@ jobs:
         run: |
           cp config/test.json.example config/test.json
           cp config/default.json.example config/default.json
+          wget -q http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-${MONGODB}.tgz
+          tar xzf mongodb-linux-x86_64-${MONGODB}.tgz
+          mkdir ./mongodb-linux-x86_64-${MONGODB}/data
+          ./mongodb-linux-x86_64-${MONGODB}/bin/mongod --dbpath ./mongodb-linux-x86_64-${MONGODB}/data --logpath ./mongodb-linux-x86_64-${MONGODB}/mongodb.log --fork
+          ./mongodb-linux-x86_64-${MONGODB}/bin/mongo forumDb --eval 'db.createUser({user:"forumUser", pwd:"forumPass", roles:["dbAdmin", "readWrite"]});'
           npm test
 
   quay_io:
