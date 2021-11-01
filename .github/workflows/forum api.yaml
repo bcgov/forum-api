@@ -48,9 +48,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["quay_io"]
     if: success() && ( (github.event_name == 'release' && github.event.action == 'created') || (github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop') )
-    env:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
     defaults:
       run:
         shell: bash

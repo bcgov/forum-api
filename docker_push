@@ -7,6 +7,10 @@ BCGOV_BASE="bcgovimages"
 REPO=$1
 QUAYIO_BASE="quay.io/h3brandon"
 
+echo "Logging into Quay..."
+echo "$QUAYIO_PASSWORD" | docker login -u "$QUAYIO_USERNAME" --password-stdin quay.io
+
+echo "Logging into Dockerhub..."
 echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 echo "logged in, building now";
 printf "\nENV GITHASH $GITHUB_SHA\n" >> Dockerfile
