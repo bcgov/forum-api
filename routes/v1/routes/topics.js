@@ -116,9 +116,13 @@ router.post("/", function(req, res, next){
 
     var ignoreGroups = config.has('ignoreGroupsFromConsideration') ? config.get('ignoreGroupsFromConsideration') : [];
     for (var i=0; i<ignoreGroups.length; i++){
-        
+                                                 
         if ( (ignoreGroups[i].indexOf("/") == 0) && (ignoreGroups[i].lastIndexOf("/") === (ignoreGroups[i].length -1)) ){
-            groups = groups.filter( (el) => {return el.match(ignoreGroups[i]) === null })
+             let s = ignoreGroups[i].substring(1, ignoreGroups[i].length-1);
+             let r = new RegExp(s);      
+            groups = groups.filter( (el) => {
+                //console.log("REGEX match", el, s, r, el.match(r));
+                return el.match(r) === null })
         }else{
             var ignoreIndex = -1;
             ignoreIndex = groups.indexOf(ignoreGroups[i]);
