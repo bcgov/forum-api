@@ -94,12 +94,14 @@ router.post("/", function(req, res, next){
         }
 
         var reqIndex = -1;
+        let hadRequiredRole = false;
 
         if (Array.isArray(reqRole)){
             
             for (let i=0; i<reqRole.length; i++){
                 reqIndex = groups.indexOf(reqRole[i]);
                 if (reqIndex !== -1){
+                    hadRequiredRole = true;
                     groups.splice(reqIndex, 1);
                 }
             }
@@ -109,7 +111,7 @@ router.post("/", function(req, res, next){
             reqIndex = req.user.groups.indexOf(reqRole);
         }
 
-        if (reqIndex===-1){
+        if (reqIndex===-1 && !hadRequiredRole){
             log.error('User ' + req.user.id + " tried to create a topic but lacks required role: " + reqRole);
             res.status(401);
             res.json({error: "Lack required role to create a topic"}).status(401);
