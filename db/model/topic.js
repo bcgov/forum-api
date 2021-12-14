@@ -32,7 +32,7 @@ model.getAll = function(query, limit, page, user, callback){
             removeGroup = removeGroup.split(", ");
         }
         if (removeGroup.indexOf(",") !== -1){
-            removeGroup = removeGroup.split(", ");
+            removeGroup = removeGroup.split(",");
         }
 
         if (Array.isArray(removeGroup)){
