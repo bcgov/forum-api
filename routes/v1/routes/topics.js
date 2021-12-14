@@ -90,15 +90,21 @@ router.post("/", function(req, res, next){
             reqRole = reqRole.split(", ");
         }
         if (reqRole.indexOf(",") !== -1){
-            reqRole = reqRole.split(", ");
+            reqRole = reqRole.split(",");
         }
 
         var reqIndex = -1;
 
         if (Array.isArray(reqRole)){
-            reqIndex = req.user.groups.some( (el) => {
-                return reqRole.indexOf(el) !== -1;
-            });
+            
+            for (let i=0; i<reqRole.length; i++){
+                reqIndex = groups.indexOf(reqRole[i]);
+                if (reqIndex !== -1){
+                    groups.splice(reqIndex, 1);
+                }
+            }
+
+            reqIndex == -1;
         }else{
             reqIndex = req.user.groups.indexOf(reqRole);
         }
