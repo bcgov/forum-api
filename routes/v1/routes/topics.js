@@ -116,7 +116,7 @@ router.post("/", function(req, res, next){
             res.status(401);
             res.json({error: "Lack required role to create a topic"}).status(401);
             return;
-        }else{
+        }else if (reqIndex !== -1){
             groups.splice(reqIndex, 1);
         }
 
