@@ -190,6 +190,8 @@ router.delete('/:topicId', function(req, res){
     var db = require('../db/db');
     var logger = require('npmlog');
     var topicId = mongoose.Types.ObjectId(req.params.topicId);
+    var config = require('config');
+    var adminGroup = config.has('adminGroup') ? config.get('adminGroup') : false;
 
     db.Topic.getAll({_id: topicId}, 1, 1, req.user, function(topicErr, topicRes) {
         if (topicErr || !topicRes || topicRes.length <= 0){
@@ -200,7 +202,7 @@ router.delete('/:topicId', function(req, res){
 
         topicRes = topicRes[0];
 
-        if (topicRes.contributors[0] === req.user.id){
+        if ( (adminGroup && req.user.groups.indexOf(adminGroup) !== -1) || ((topicRes.contributors.length === 1) && (topicRes.contributors[0] === req.user.id)) ){
 
             db.Topic.deleteOne({_id: topicId}, function(err, result){
                 if (err){
@@ -222,7 +224,7 @@ router.delete('/:topicId', function(req, res){
 
         }else{
             res.status(403);
-            res.json({error: "You did not create this topic and can therefore not delete it"});
+            res.json({error: "You are either not an admin or tried to delete a topic that you are not the sole contributor of"});
         }
 
 
