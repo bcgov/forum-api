@@ -13,7 +13,7 @@ var setTemplate = function(topic, comment, user, triggeringUser){
     email = email.replace("{{name}}", user['name']);
     email = email.replace("{{updater}}", triggeringUser['name']);
     email = email.replace("{{topic}}", topic.name);
-    email = email.replace("{{comment}}", comment.author_user);
+    email = email.replace("{{comment}}", comment.comment);
 
     return email
 };

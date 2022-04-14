@@ -18,7 +18,7 @@ function checkCommentPermissions(user, topicId, commentId, sock, cb){
 
     var db = require('../db/db');
 
-    db.Comment.getAll({}, 1, 1, user, function(err, results){
+    db.Comment.getAll({}, 1, 1, user, null, function(err, results){
         if (err || !results || results.length < 1){
             cb(false, sock);
             return;

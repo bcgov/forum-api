@@ -10,13 +10,13 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
     var db = require('../db/db');
 
-    var limit = 100;
+    var limit = 250;
     if (typeof(req.query.limit) !== "undefined"){
         limit = req.query.limit;
         limit = parseInt(limit);
     }
-    if (limit > 100){
-        limit = 100;
+    if (limit > 250){
+        limit = 250;
     }
 
     var page = 1;

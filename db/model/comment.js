@@ -10,11 +10,17 @@ const commentSchema = new Schema({
 
 var model = mongoose.model('comment', commentSchema);
 
-model.getAll = function(query, limit, page, user, callback){
+model.getAll = function(query, limit, page, user, sort, callback){
     var logger = require('npmlog');
     var db = require('../db');
     var skip = limit * (page - 1);
     logger.verbose("Comment get all, skip, limit", skip, limit);
+
+    if ( (sort === null) || (!sort) ){
+        sort = {
+            created_ts: 1
+        }
+    }
 
     db.Comment.aggregate([
         {
@@ -64,7 +70,10 @@ model.getAll = function(query, limit, page, user, callback){
         },
         {
             $limit: limit
-        }
+        },
+        {
+            $sort: sort
+        },
     ]).exec(callback);
 };
 

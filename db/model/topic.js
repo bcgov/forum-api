@@ -126,6 +126,10 @@ model.getAll = function(query, limit, page, user, callback){
 
     ];
 
+    if (limit <= 0){
+        agg.splice(4,2);
+    }
+
     //note skip MUST be before limit or this will not work
     //note because this is an aggregate query the skip and limit must be in the aggregate not the inline functions
 

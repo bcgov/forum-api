@@ -40,7 +40,7 @@ router.get('/:topicId', function(req, res, next) {
             return;
         }
 
-        db.Comment.getAll({topic_id: topic._id}, limit, page, req.user, function(error, results){
+        db.Comment.getAll({topic_id: topic._id}, limit, page, req.user, null, function(error, results){
             logger.verbose('in comment find');
             if (error){
                 res.status(500);
@@ -52,6 +52,54 @@ router.get('/:topicId', function(req, res, next) {
     });
 
 
+});
+
+router.get('/', function(req, res){
+    var logger = require('npmlog');
+    var db = require('../db/db');
+    var topicId = req.params.topicId;
+
+    var limit = 250;
+    if (typeof(req.query.limit) !== "undefined"){
+        limit = req.query.limit;
+    }
+    if (limit > 250){
+        limit = 250;
+    }
+
+    var page = 1;
+    if (typeof(req.query.page) !== "undefined"){
+        page = req.query.page;
+    }
+    if (page < 1){
+        page = 1;
+    }
+
+
+    db.Topic.getAll({}, -1, 1, req.user, function(err, topicRes){
+        const topicList = topicRes.map( (item) => {
+            let id = item._id;
+            return id;
+        });
+
+        let q = {
+            topic_id: {$in: topicList}
+        }
+
+        if (typeof(req.query.createdAfter) !== 'undefined'){
+            q.created_ts = { $gt: new Date(req.query.createdAfter) }
+        }
+        
+        db.Comment.getAll(q, limit, page, req.user, { created_ts: -1 }, function(error, results){
+            const resp = results.map( item => {
+                const found = topicRes.find(element => {
+                    return element._id.toString() == item.topic_id.toString()
+                });
+                return {...item, topic_name: found.name}
+            });
+            return res.json(resp);
+        });
+    });
 });
 
 //create a new comment in the topic
