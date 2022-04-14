@@ -53,15 +53,22 @@ function sendCommentMessage(topicId, comment){
     var websockets = require('../../../websocket');
     var conns = websockets.getConnections();
     var keys = Object.keys(conns);
-    for (var i=0; i<keys.length; i++){
-        checkCommentPermissions(conns[keys[i]].user, topicId, comment._id, conns[keys[i]], function(send, sock) {
-            if (send) {
-                if (websockets.isOpen(sock)) {
-                    sock.send(JSON.stringify({comment: comment}));
+    var db = require('../db/db');
+    db.Topic.findOne({_id: topicId}, function(err, result){
+        comment = JSON.parse(JSON.stringify(comment));
+        if (!err && result){
+            comment.topic_name = result.name;
+        }
+        for (var i=0; i<keys.length; i++){
+            checkCommentPermissions(conns[keys[i]].user, topicId, comment._id, conns[keys[i]], function(send, sock) {
+                if (send) {
+                    if (websockets.isOpen(sock)) {
+                        sock.send(JSON.stringify({comment: comment}));
+                    }
                 }
-            }
-        });
-    }
+            });
+        }
+    });
 }
 
 messages.sendCommentMessage = function(topic, comment){
