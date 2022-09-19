@@ -106,7 +106,7 @@ router.post("/", function(req, res, next){
                 }
             }
 
-            reqIndex == -1;
+            reqIndex = -1;
         }else{
             reqIndex = req.user.groups.indexOf(reqRole);
         }
