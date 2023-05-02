@@ -91,6 +91,9 @@ router.get('/', function(req, res){
         }
         
         db.Comment.getAll(q, limit, page, req.user, { created_ts: -1 }, function(error, results){
+            if (error){
+                return res.status(500).json({error: error.getMessage()});
+            }
             const resp = results.map( item => {
                 const found = topicRes.find(element => {
                     return element._id.toString() == item.topic_id.toString()
