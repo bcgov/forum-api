@@ -62,7 +62,7 @@ model.getAll = function(query, limit, page, user, callback){
     var adminGroup = config.has('adminGroup') ? config.get('adminGroup') : false;
 
     //user is in admin group so they can see everything
-    if ( (adminGroup) && (user.groups) && (user.groups.indexOf(adminGroup) !== -1) ){
+    if ( (adminGroup) && (user) && (user.groups) && (user.groups.indexOf(adminGroup) !== -1) ){
         defaultPermOverride = {};
     }
 

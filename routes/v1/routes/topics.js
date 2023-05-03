@@ -75,7 +75,7 @@ router.post("/", function(req, res, next){
     topic.contributors.push(req.user.id);
     topic.subscribers.push(req.user.id);
 
-    var groups = req.user.groups.slice();
+    var groups = req.user && req.user.groups ? req.user.groups.slice() : [];
 
     if (typeof(req.body.parent_id) !== "undefined"){
         try{
@@ -108,7 +108,7 @@ router.post("/", function(req, res, next){
 
             reqIndex = -1;
         }else{
-            reqIndex = req.user.groups.indexOf(reqRole);
+            reqIndex = req.user && req.user.groups ? req.user.groups.indexOf(reqRole) : -1;
         }
 
         if (reqIndex===-1 && !hadRequiredRole){
@@ -202,7 +202,7 @@ router.delete('/:topicId', function(req, res){
 
         topicRes = topicRes[0];
 
-        if ( (adminGroup && req.user.groups.indexOf(adminGroup) !== -1) || ((topicRes.contributors.length === 1) && (topicRes.contributors[0] === req.user.id)) ){
+        if ( (adminGroup && req.user && req.user.groups.indexOf(adminGroup) !== -1) || ((topicRes.contributors.length === 1) && (topicRes.contributors[0] === req.user.id)) ){
 
             db.Topic.deleteOne({_id: topicId}, function(err, result){
                 if (err){
