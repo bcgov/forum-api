@@ -5,6 +5,7 @@ env:
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
   QUAYIO_PASSWORD: ${{ secrets.QUAYIO_PASSWORD }}
   QUAYIO_USERNAME: ${{ secrets.QUAYIO_USERNAME }}
+  NODE_VERSION: 11.15.0
 jobs:
   
   unit_test:
@@ -16,6 +17,9 @@ jobs:
         shell: bash
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{env.NODE_VERSION}}
       - name: install dependencies
         run: npm ci
       - name: test
